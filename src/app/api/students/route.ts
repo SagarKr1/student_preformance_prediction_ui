@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { mockStudents, Student } from '@/data/mockData';
 
 // Let's create an in-memory mutable copy of the mock data to simulate real CRUD operations
-let studentsList: Student[] = [...mockStudents];
+const studentsList: Student[] = [...mockStudents];
 
 export async function GET(request: Request) {
   try {

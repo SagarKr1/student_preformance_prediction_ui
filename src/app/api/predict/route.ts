@@ -44,9 +44,9 @@ export async function POST(request: Request) {
     const recommendations: any[] = [];
 
     // Detailed scoring metrics
-    let attendanceScore = att >= 85 ? 100 : att >= 75 ? 80 : att >= 60 ? 50 : 20;
-    let academicScore = ((internal / 50) * 0.3 + (assignment / 100) * 0.4 + (practical / 50) * 0.3) * 100;
-    let consistencyScore = Math.max(0, 100 - backlogs * 25);
+    const attendanceScore = att >= 85 ? 100 : att >= 75 ? 80 : att >= 60 ? 50 : 20;
+    const academicScore = ((internal / 50) * 0.3 + (assignment / 100) * 0.4 + (practical / 50) * 0.3) * 100;
+    const consistencyScore = Math.max(0, 100 - backlogs * 25);
     
     // GPA contribution
     const gpaScore = (gpa / 10) * 100;

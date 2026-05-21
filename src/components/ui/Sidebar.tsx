@@ -70,21 +70,39 @@ export default function Sidebar() {
 
   const handleNavigation = (path: string) => {
     router.push(path);
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
   };
 
   return (
-    <motion.aside
-      initial={{ width: isSidebarOpen ? 280 : 80 }}
-      animate={{ width: isSidebarOpen ? 280 : 80 }}
-      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-      className={`fixed top-0 left-0 h-screen z-30 flex flex-col border-r transition-colors duration-300
-        ${theme === 'light' 
-          ? 'bg-white/80 border-slate-200' 
-          : theme === 'cyberpunk'
-            ? 'bg-[#0a0015]/85 border-[#ff007f]/30'
-            : 'bg-slate-950/85 border-slate-800'} 
-        backdrop-blur-xl shadow-xl`}
-    >
+    <>
+      {/* Mobile Backdrop Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-30 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.aside
+        initial={false}
+        animate={{ width: isSidebarOpen ? 280 : 80 }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        className={`fixed top-0 left-0 h-screen z-40 flex flex-col border-r transition-all duration-300
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${theme === 'light' 
+            ? 'bg-white/95 border-slate-200' 
+            : theme === 'cyberpunk'
+              ? 'bg-[#0a0015]/95 border-[#ff007f]/30'
+              : 'bg-slate-950/95 border-slate-800'} 
+          backdrop-blur-xl shadow-xl`}
+      >
       {/* Sidebar Header */}
       <div className="h-20 flex items-center justify-between px-4 border-b border-slate-200/10 relative">
         <div className="flex items-center gap-3 overflow-hidden">
@@ -244,5 +262,6 @@ export default function Sidebar() {
         </button>
       </div>
     </motion.aside>
+    </>
   );
 }

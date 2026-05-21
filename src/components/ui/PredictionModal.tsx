@@ -95,7 +95,7 @@ export default function PredictionModal({ result, isOpen, onClose }: PredictionM
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: 'spring', duration: 0.5 }}
-            className={`w-full max-w-3xl max-h-[85vh] rounded-3xl border overflow-y-auto shadow-2xl p-6 lg:p-8 relative z-10 glass-card
+            className={`w-full max-w-3xl max-h-[95vh] md:max-h-[85vh] rounded-3xl border overflow-y-auto shadow-2xl p-4 md:p-6 lg:p-8 relative z-10 glass-card
               ${theme === 'light' ? 'text-slate-800' : 'text-slate-100'}`}
           >
             {/* Close Button */}

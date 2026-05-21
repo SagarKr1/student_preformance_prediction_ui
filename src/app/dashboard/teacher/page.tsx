@@ -126,7 +126,7 @@ export default function TeacherDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Performance Distribution */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-96">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[300px] md:h-96">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Branch Academic Rating</span>
             <Sparkles className="h-4.5 w-4.5 text-indigo-500" />
@@ -169,7 +169,7 @@ export default function TeacherDashboardPage() {
         </div>
 
         {/* CS Semester Performance Trend */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-96 lg:col-span-2">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[300px] md:h-96 lg:col-span-2">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Computer Science GPA Trajectory</span>
             <Activity className="h-4.5 w-4.5 text-indigo-500" />
@@ -213,7 +213,7 @@ export default function TeacherDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Events */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-80 lg:col-span-2">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[250px] md:h-80 lg:col-span-2">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
               <Calendar className="h-4 w-4 text-indigo-500" /> Department Milestones
@@ -237,7 +237,7 @@ export default function TeacherDashboardPage() {
         </div>
 
         {/* stream */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-80">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[250px] md:h-80">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <Bell className="h-4 w-4 text-indigo-500" /> Activity Stream

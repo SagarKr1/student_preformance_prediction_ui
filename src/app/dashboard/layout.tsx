@@ -43,12 +43,9 @@ export default function DashboardLayout({
       <Sidebar />
 
       {/* Main Panel Area */}
-      <motion.div
-        animate={{ 
-          paddingLeft: isSidebarOpen ? '280px' : '80px' 
-        }}
-        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-        className="flex-1 flex flex-col min-h-screen relative"
+      <div
+        className={`flex-1 flex flex-col min-h-screen relative transition-[padding] duration-400 ease-[cubic-bezier(0.4,0,0.2,1)]
+          ${isSidebarOpen ? 'lg:pl-[280px]' : 'lg:pl-[80px]'} pl-0 w-full`}
       >
         {/* Navbar Header */}
         <Navbar />
@@ -66,7 +63,7 @@ export default function DashboardLayout({
             </motion.div>
           </AnimatePresence>
         </main>
-      </motion.div>
+      </div>
 
     </div>
   );

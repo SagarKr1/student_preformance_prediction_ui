@@ -178,7 +178,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Student Performance Status (Pie Chart) */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-96">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[300px] md:h-96">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Student Rating Distribution</span>
             <Sparkles className="h-4.5 w-4.5 text-indigo-500" />
@@ -221,7 +221,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Branch-wise Student GPA (Grouped Bar Chart) */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-96 lg:col-span-2">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[300px] md:h-96 lg:col-span-2">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Branch Wise GPA & Attendance Standing</span>
             <Activity className="h-4.5 w-4.5 text-indigo-500" />
@@ -260,7 +260,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Semester-wise Performance Graph (Area Chart) */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-96 lg:col-span-2">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[300px] md:h-96 lg:col-span-2">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Semester Performance Trends</span>
             <Award className="h-4.5 w-4.5 text-indigo-500" />
@@ -299,7 +299,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Upcoming Events Column */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-96">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[300px] md:h-96">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
               <Calendar className="h-4 w-4 text-indigo-500" /> Upcoming Sem Events
@@ -331,7 +331,7 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Session-wise Student Performance Graph (Line Chart) */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-80 lg:col-span-2">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[250px] md:h-80 lg:col-span-2">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Session Wise Student Enrollment</span>
             <Users className="h-4.5 w-4.5 text-indigo-500" />
@@ -364,7 +364,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Recent Activities List */}
-        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between h-80">
+        <div className="glass-card p-5 rounded-2xl border flex flex-col justify-between min-h-[250px] md:h-80">
           <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <Bell className="h-4 w-4 text-indigo-500 animate-bounce" /> Live Campus Stream

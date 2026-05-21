@@ -18,9 +18,10 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { mockNotifications } from '@/data/mockData';
+import { Menu } from 'lucide-react';
 
 export default function Navbar() {
-  const { theme, setTheme, user, logout } = useThemeContext();
+  const { theme, setTheme, user, logout, setSidebarOpen } = useThemeContext();
   const [notifications, setNotifications] = useState(mockNotifications);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -49,7 +50,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className={`sticky top-0 z-20 w-full border-b transition-colors duration-300 backdrop-blur-md h-20 flex items-center justify-between px-6 lg:px-8
+    <header className={`sticky top-0 z-20 w-full border-b transition-colors duration-300 backdrop-blur-md h-20 flex items-center justify-between px-4 lg:px-8
       ${theme === 'light' 
         ? 'bg-white/70 border-slate-200' 
         : theme === 'cyberpunk'
@@ -57,35 +58,49 @@ export default function Navbar() {
           : 'bg-slate-950/70 border-slate-800'}`}>
       
       {/* Left side - Breadcrumbs & Dynamic Info */}
-      <div className="flex flex-col gap-0.5">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500">
-          <span>ECI</span>
-          {breadcrumbs.map((bc, i) => (
-            <React.Fragment key={bc.url}>
-              <span>/</span>
-              <span className={i === breadcrumbs.length - 1 ? "text-indigo-500 dark:text-indigo-400" : ""}>
-                {bc.label}
+      <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className={`shrink-0 lg:hidden p-2 rounded-xl border transition-all duration-200
+            ${theme === 'light' 
+              ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700' 
+              : theme === 'cyberpunk'
+                ? 'bg-[#0d0221] border-[#ff007f]/30 text-[#39ff14]'
+                : 'bg-slate-900 border-slate-800 text-slate-300'}`}
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        
+        <div className="flex flex-col gap-0.5 min-w-0 overflow-hidden">
+          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-slate-400 dark:text-slate-500 truncate">
+            <span className="shrink-0">ECI</span>
+            {breadcrumbs.map((bc, i) => (
+              <React.Fragment key={bc.url}>
+                <span className="shrink-0">/</span>
+                <span className={`truncate ${i === breadcrumbs.length - 1 ? "text-indigo-500 dark:text-indigo-400" : "hidden lg:inline-block"}`}>
+                  {bc.label}
+                </span>
+              </React.Fragment>
+            ))}
+          </div>
+          <h1 className="text-sm sm:text-base md:text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2 truncate">
+            <span className="truncate">{breadcrumbs[breadcrumbs.length - 1]?.label || 'Dashboard'}</span>
+            {user.role === 'admin' && (
+              <span className="shrink-0 whitespace-nowrap text-[10px] bg-indigo-500/10 text-indigo-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-indigo-500/20 hidden md:inline-block">
+                System Admin
               </span>
-            </React.Fragment>
-          ))}
+            )}
+            {user.role === 'teacher' && (
+              <span className="shrink-0 whitespace-nowrap text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-amber-500/20 hidden md:inline-block">
+                Branch: {user.branch}
+              </span>
+            )}
+          </h1>
         </div>
-        <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          {breadcrumbs[breadcrumbs.length - 1]?.label || 'Dashboard'}
-          {user.role === 'admin' && (
-            <span className="text-[10px] bg-indigo-500/10 text-indigo-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-indigo-500/20">
-              System Admin
-            </span>
-          )}
-          {user.role === 'teacher' && (
-            <span className="text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border border-amber-500/20">
-              Branch: {user.branch}
-            </span>
-          )}
-        </h1>
       </div>
 
       {/* Right side - Controls (Search, Theme, Bell, Profile) */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
         
         {/* Futuristic Search bar */}
         <div className={`hidden md:flex items-center gap-2.5 px-3 py-1.5 rounded-full border transition-all duration-300 w-64 neon-border-focus

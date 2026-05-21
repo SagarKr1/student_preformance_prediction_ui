@@ -142,7 +142,7 @@ export default function AdminPredictPage() {
           </div>
 
           {/* Student Autofill drop-down option */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200/10 bg-slate-500/5 min-w-[240px]">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200/10 bg-slate-500/5 w-full md:w-auto md:min-w-[240px]">
             <UserCheck className="h-4 w-4 text-indigo-500" />
             <select
               value={selectedStudentId}
@@ -299,7 +299,7 @@ export default function AdminPredictPage() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className={`px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold text-xs flex items-center gap-2 shadow-xl hover:opacity-95 disabled:opacity-50 cursor-pointer`}
+              className={`px-4 sm:px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold text-[10px] sm:text-xs flex items-center gap-1 sm:gap-2 shadow-xl hover:opacity-95 disabled:opacity-50 cursor-pointer`}
             >
               {loading ? (
                 <>

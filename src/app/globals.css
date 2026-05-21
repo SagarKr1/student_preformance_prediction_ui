@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --ring: rgba(99, 102, 241, 0.2);
+    --glow-color: rgba(99, 102, 241, 0.15);
+  }
+
+  .dark {
+    --background: #020617;
+    --foreground: #f8fafc;
+    --card: rgba(15, 23, 42, 0.6);
+    --border: rgba(255, 255, 255, 0.08);
+    --ring: rgba(168, 85, 247, 0.3);
+    --glow-color: rgba(168, 85, 247, 0.15);
+  }
+
+  .cyberpunk {
+    --background: #0a0015;
+    --foreground: #39ff14;
+    --card: rgba(13, 2, 33, 0.7);
+    --border: rgba(255, 0, 127, 0.3);
+    --ring: rgba(255, 0, 127, 0.5);
+    --glow-color: rgba(0, 240, 255, 0.2);
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Premium Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5);
+}
+
+/* Glassmorphism Styles */
+.glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+}
+
+.dark .glass-card {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.cyberpunk .glass-card {
+  background: rgba(13, 2, 33, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 0, 127, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.1);
+}
+
+/* Glowing Neon Borders */
+.neon-glow-primary {
+  box-shadow: 0 0 15px var(--glow-color);
+}
+
+.neon-border-focus:focus-within {
+  border-color: rgba(99, 102, 241, 0.8);
+  box-shadow: 0 0 15px var(--ring);
+}
+
+.dark .neon-border-focus:focus-within {
+  border-color: rgba(168, 85, 247, 0.8);
+  box-shadow: 0 0 15px var(--ring);
+}
+
+.cyberpunk .neon-border-focus:focus-within {
+  border-color: rgba(0, 240, 255, 0.8);
+  box-shadow: 0 0 15px var(--ring);
+}
+
+/* Floating Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Glowing backdrops */
+.glow-orb {
+  filter: blur(100px);
+  opacity: 0.45;
+  mix-blend-mode: screen;
+}
+
+.dark .glow-orb {
+  opacity: 0.3;
+}
+
+.cyberpunk .glow-orb {
+  opacity: 0.6;
+}
+
+/* Custom transitions */
+.transition-all-300 {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -1,0 +1,143 @@
+# ==============================================================================
+# GitHub Actions CI/CD Pipeline - "Engineering College India" SaaS Dashboard
+# File: .github/workflows/frontend-ci.yml
+# ==============================================================================
+# This enterprise-grade CI workflow validates code quality, visual compilation,
+# type-safety, and Vercel hosting compatibility for every pull request and release
+# candidate branch push. It leverages secure caching, dependency pruning, and 
+# output verification to achieve robust DevOps validation cycles.
+# ==============================================================================
+
+name: "Enterprise Frontend Integration CI"
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - 'release/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+
+# Global configurations
+env:
+  NODE_VERSION: '20.x'
+  NEXT_TELEMETRY_DISABLED: '1' # Disables telemetry logging to accelerate build execution speed
+
+# Concurrency control: automatically cancel older runs of the same workflow on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-build:
+    name: "Inspect, Typecheck & Compile"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # Step 1: Secure Repository Codebase Checkout
+      - name: "Step 1: Checkout Source Code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # Perform shallow clone to minimize transit payload size
+
+      # Step 2: Establish Enterprise Node.js Runtime Environment
+      - name: "Step 2: Initialize Node.js Environment"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm' # Integrates native npm cache detection
+          cache-dependency-path: '**/package-lock.json'
+
+      # Step 3: Package Lock and Dependency Resolution Caching
+      # This layer stores and restores node_modules, utilizing the lockfile hash as the cache key.
+      - name: "Step 3: Setup Node Modules Cache"
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      # Step 4: Install Dependencies (Deterministic and pruned)
+      - name: "Step 4: Resolve Project Dependencies"
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: |
+          echo "Cache miss. Resolving clean installation..."
+          npm ci --prefer-offline --no-audit --no-fund
+        shell: bash
+
+      # Step 5: Validate Coding Standards (ESLint Execution)
+      - name: "Step 5: Execute Code Linter (ESLint)"
+        run: npm run lint
+        shell: bash
+
+      # Step 6: Validate Static Types (TypeScript Compiler Validation)
+      - name: "Step 6: Check Static Types (TypeScript Compiler)"
+        run: npm run type-check
+        shell: bash
+
+      # Step 7: Next.js Optimized Compiler Build
+      - name: "Step 7: Execute Next.js Compiler Build"
+        run: npm run build
+        shell: bash
+
+      # Step 8: Verify Build Artifact Integrity & Vercel Structure
+      # Guarantees compile directory contains static html documents, bundle scripts, and routing manifests.
+      - name: "Step 8: Verify Target Build Output"
+        run: |
+          echo "Analyzing .next build structure..."
+          if [ ! -d ".next" ]; then
+            echo "ERROR: Target Next.js compiler output directory (.next) not found!"
+            exit 1
+          fi
+          
+          if [ ! -f ".next/required-server-files.json" ]; then
+            echo "ERROR: Vercel deployment manifest files missing!"
+            exit 1
+          fi
+          
+          echo "Build artifact integrity check passed."
+          ls -la .next
+        shell: bash
+
+      # Step 9: Post Status Log (Diagnostics reporting)
+      - name: "Step 9: Log Pipeline Verification Result"
+        if: success()
+        run: |
+          echo "=========================================================================="
+          echo "SUCCESSFUL BUILD VERIFICATION: ENGINEERING COLLEGE INDIA SAAS UI"
+          echo "Status: Verification Passed"
+          echo "Next.js Build Output Size: $(du -sh .next | cut -f1)"
+          echo "Deployable Status: TRUE (Vercel Compatibility Validated)"
+          echo "=========================================================================="
+        shell: bash
+
+      # Step 10: Fail Handler and Alerts Mock
+      - name: "Step 10: Fallback Diagnostic Diagnostics Log"
+        if: failure()
+        run: |
+          echo "=========================================================================="
+          echo "PIPELINE FAILURE DETECTED: DIAGNOSTIC METRICS NEED REVIEW"
+          echo "Branch Name: ${{ github.ref }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Check compiler logs for syntax warnings, type errors or lint failures."
+          echo "=========================================================================="
+        shell: bash

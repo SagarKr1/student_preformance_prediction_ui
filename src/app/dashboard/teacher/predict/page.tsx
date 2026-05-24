@@ -11,6 +11,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { predictStudentPerformance } from '@/services/predict.api';
 
 export default function TeacherPredictPage() {
   const { theme } = useThemeContext();
@@ -80,45 +81,214 @@ export default function TeacherPredictPage() {
     setSelectedStudentId('');
   };
 
-  const handlePredict = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (
-      attendance === '' ||
-      studyHours === '' ||
-      internalMarks === '' ||
-      assignmentScore === '' ||
-      practicalMarks === '' ||
-      backlogCount === '' ||
-      previousGpa === ''
-    ) {
-      alert('Please fill in all features.');
-      return;
-    }
+  const handlePredict = async (
+  e: React.FormEvent
+) => {
 
-    setLoading(true);
+  e.preventDefault();
 
-    try {
-      const response = await axios.post('/api/predict', {
-        attendance_percentage: attendance,
-        study_hours_per_day: studyHours,
-        internal_marks: internalMarks,
-        assignment_score: assignmentScore,
-        practical_marks: practicalMarks,
-        backlog_count: backlogCount,
-        previous_sem_gpa: previousGpa
+  // VALIDATION
+  if (
+    attendance === '' ||
+    studyHours === '' ||
+    internalMarks === '' ||
+    assignmentScore === '' ||
+    practicalMarks === '' ||
+    backlogCount === '' ||
+    previousGpa === ''
+  ) {
+
+    alert(
+      'Please fill in all features.'
+    );
+
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+
+    // API CALL
+    const response =
+      await predictStudentPerformance({
+
+        attendance_percentage:
+          Number(attendance),
+
+        study_hours_per_day:
+          Number(studyHours),
+
+        internal_marks:
+          Number(internalMarks),
+
+        assignment_score:
+          Number(assignmentScore),
+
+        practical_marks:
+          Number(practicalMarks),
+
+        backlog_count:
+          Number(backlogCount),
+
+        previous_sem_gpa:
+          Number(previousGpa),
       });
 
-      if (response.data.success) {
-        setPredictionResult(response.data);
-        setIsModalOpen(true);
-      }
-    } catch (error) {
-      console.error('Error conducting predict evaluation:', error);
-      alert('Prediction query failed. Check logs.');
-    } finally {
-      setLoading(false);
+    console.log(
+      "Prediction Response:",
+      response
+    );
+
+    // SUCCESS
+    if (response.success) {
+
+      // MAP RESPONSE
+      // TO CURRENT UI STATE
+      setPredictionResult({
+
+        // MAIN RESULT
+        prediction:
+          response.prediction
+            .final_result,
+
+        // CONFIDENCE
+        confidence:
+          response.prediction
+            .model_confidence,
+
+        // RISK LEVEL
+        riskLevel:
+          response.prediction
+            .risk_level,
+
+        // HEALTH
+        academicHealth:
+          response.prediction
+            .academic_health,
+
+        // PERFORMANCE SCORE
+        performanceScore:
+          response.prediction
+            .performance_score,
+
+
+        // ANALYSIS CARDS
+        analysis: {
+
+          // ATTENDANCE
+          attendanceScore:
+            response.input_data
+              .attendance_percentage,
+
+          // ASSIGNMENTS
+          academicScore:
+            response.input_data
+              .assignment_score,
+
+          // CONSISTENCY
+          consistencyScore:
+            Math.max(
+              0,
+              100 -
+              (
+                response.input_data
+                  .backlog_count * 25
+              )
+            ),
+
+          // GPA
+          gpaScore:
+            (
+              response.input_data
+                .previous_sem_gpa * 10
+            ),
+        },
+
+
+        // RECOMMENDATION SUMMARY
+        recommendationSummary: {
+
+          high:
+            response
+              .recommendation_summary
+              .high_priority,
+
+          medium:
+            response
+              .recommendation_summary
+              .medium_priority,
+
+          low:
+            response
+              .recommendation_summary
+              .low_priority,
+        },
+
+
+        // AI SUGGESTIONS
+        recommendationCards:
+
+          response.ai_suggestions.map(
+            (item: any) => ({
+
+              priority:
+                item.priority,
+
+              title:
+                item.title,
+
+              description:
+                item.message,
+
+              category:
+                item.category,
+            })
+          ),
+
+
+        // CONFIDENCE BREAKDOWN
+        confidenceAnalysis: {
+
+          fail:
+            response.prediction
+              .confidence_analysis
+              .FAIL,
+
+          pass:
+            response.prediction
+              .confidence_analysis
+              .PASS,
+
+          excellent:
+            response.prediction
+              .confidence_analysis
+              .EXCELLENT,
+        },
+      });
+
+      // OPEN MODAL
+      setIsModalOpen(true);
     }
-  };
+
+  } catch (error: any) {
+
+    console.error(
+      'Error conducting predict evaluation:',
+      error.response?.data ||
+      error.message
+    );
+
+    alert(
+      error.response?.data?.message ||
+      'Prediction query failed.'
+    );
+
+  } finally {
+
+    setLoading(false);
+  }
+};
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">

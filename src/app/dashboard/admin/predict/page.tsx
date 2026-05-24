@@ -4,19 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { useThemeContext } from '@/components/ui/ThemeProvider';
 import PredictionModal from '@/components/ui/PredictionModal';
 import axios from 'axios';
-import { 
-  BrainCircuit, 
-  Sparkles, 
-  RefreshCw, 
+import {
+  BrainCircuit,
+  Sparkles,
+  RefreshCw,
   UserCheck,
   TrendingUp,
   Award
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+import { predictStudentPerformance } from '@/services/predict.api';
+
 export default function AdminPredictPage() {
   const { theme } = useThemeContext();
-  
+
   // Form Values State
   const [attendance, setAttendance] = useState<number | ''>('');
   const [studyHours, setStudyHours] = useState<number | ''>('');
@@ -48,7 +50,7 @@ export default function AdminPredictPage() {
       }
     };
     fetchForwards();
-    
+
     // Helper function
     function fetchForwards() {
       fetchStudentsForAutofill();
@@ -60,7 +62,7 @@ export default function AdminPredictPage() {
     setSelectedStudentId(id);
 
     if (!id) return;
-    
+
     const target = students.find(s => s.registrationNo === id);
     if (target) {
       setAttendance(target.attendance);
@@ -84,8 +86,13 @@ export default function AdminPredictPage() {
     setSelectedStudentId('');
   };
 
-  const handlePredict = async (e: React.FormEvent) => {
+  const handlePredict = async (
+    e: React.FormEvent
+  ) => {
+
     e.preventDefault();
+
+    // VALIDATION
     if (
       attendance === '' ||
       studyHours === '' ||
@@ -95,42 +102,163 @@ export default function AdminPredictPage() {
       backlogCount === '' ||
       previousGpa === ''
     ) {
-      alert('Please fill out all predictive features before running diagnostic cycles.');
+
+      alert(
+        'Please fill out all predictive features before running diagnostic cycles.'
+      );
+
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/predict', {
-        attendance_percentage: attendance,
-        study_hours_per_day: studyHours,
-        internal_marks: internalMarks,
-        assignment_score: assignmentScore,
-        practical_marks: practicalMarks,
-        backlog_count: backlogCount,
-        previous_sem_gpa: previousGpa
-      });
 
-      if (response.data.success) {
-        setPredictionResult(response.data);
+      // API CALL
+      const response =
+        await predictStudentPerformance({
+
+          attendance_percentage:
+            Number(attendance),
+
+          study_hours_per_day:
+            Number(studyHours),
+
+          internal_marks:
+            Number(internalMarks),
+
+          assignment_score:
+            Number(assignmentScore),
+
+          practical_marks:
+            Number(practicalMarks),
+
+          backlog_count:
+            Number(backlogCount),
+
+          previous_sem_gpa:
+            Number(previousGpa),
+        });
+
+      console.log(
+        "Prediction Response:",
+        response
+      );
+
+      // SUCCESS
+      if (response.success) {
+
+        // MAP BACKEND RESPONSE
+        // TO CURRENT UI STATE
+        setPredictionResult({
+
+          // MAIN RESULT
+          prediction:
+            response.prediction
+              .final_result,
+
+          // CONFIDENCE
+          confidence:
+            response.prediction
+              .model_confidence,
+
+          // RISK LEVEL
+          riskLevel:
+            response.prediction
+              .risk_level,
+
+          // HEALTH
+          academicHealth:
+            response.prediction
+              .academic_health,
+
+          // PERFORMANCE
+          performanceScore:
+            response.prediction
+              .performance_score,
+
+          // ANALYSIS CARDS
+          analysis: {
+
+            attendanceScore:
+              response.input_data
+                .attendance_percentage,
+
+            // ASSIGNMENTS
+            academicScore:
+              response.input_data
+                .assignment_score,
+
+            consistencyScore:
+              100 -
+              (
+                response.input_data
+                  .backlog_count * 25
+              ),
+
+            gpaScore:
+              (
+                response.input_data
+                  .previous_sem_gpa * 10
+              ),
+          },
+
+          // SUGGESTION CARDS
+          recommendationCards:
+
+            response.ai_suggestions.map(
+              (item: any) => ({
+
+                priority:
+                  item.priority,
+
+                title:
+                  item.title,
+
+                description:
+                  item.message,
+
+                category:
+                  item.category,
+              })
+            ),
+
+          // OPTIONAL
+          confidenceAnalysis:
+            response.prediction
+              .confidence_analysis,
+        });
+
+        // OPEN MODAL
         setIsModalOpen(true);
       }
-    } catch (error) {
-      console.error('Error conducting AI prediction metrics:', error);
-      alert('Network diagnostic failed. Check console.');
+
+    } catch (error: any) {
+
+      console.error(
+        'Error conducting AI prediction metrics:',
+        error.response?.data ||
+        error.message
+      );
+
+      alert(
+        error.response?.data?.message ||
+        'Prediction failed'
+      );
+
     } finally {
+
       setLoading(false);
     }
   };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      
+
       {/* Description header card */}
       <div className="glass-card p-6 rounded-2xl border relative overflow-hidden shadow-md">
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
-        
+
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <h2 className="text-xl font-extrabold tracking-tight flex items-center gap-2">
@@ -163,9 +291,9 @@ export default function AdminPredictPage() {
       {/* Main Predictor Form card */}
       <div className="glass-card p-6 lg:p-8 rounded-3xl border shadow-xl relative">
         <form onSubmit={handlePredict} className="space-y-6">
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* Attendance input */}
             <motion.div whileTap={{ scale: 0.99 }} className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Class Attendance (%)</label>

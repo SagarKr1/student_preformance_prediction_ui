@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useThemeContext } from '@/components/ui/ThemeProvider';
 import { motion, AnimatePresence } from 'framer-motion';
+import { loginUser , LoginPayload } from '@/services/auth.api';
 import { 
   GraduationCap, 
   Mail, 
@@ -26,10 +27,10 @@ export default function LoginPage() {
 
   const handleQuickFill = () => {
     if (role === 'admin') {
-      setEmail('admin@college.in');
+      setEmail('admin@gmail.com');
       setPassword('admin123');
     } else {
-      setEmail('teacher@college.in');
+      setEmail('cse.teacher@gmail.com');
       setPassword('teacher123');
     }
     setError('');
@@ -46,15 +47,17 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await axios.post('/api/auth/login', {
-        email,
-        password,
-        role
-      });
+      const  response =await loginUser({email,password});
+      
+      // const response = await axios.post('/api/auth/login', {
+      //   email,
+      //   password,
+      //   role
+      // });
 
-      if (response.data.success) {
+      if (response.success &&  response.token) {
         // Authenticate inside global state
-        login(response.data.user, response.data.token);
+        login(response.user, response.token);
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Invalid credentials or connection error.');

@@ -4,26 +4,29 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useThemeContext } from '@/components/ui/ThemeProvider';
 import StudentModal from '@/components/ui/StudentModal';
 import axios from 'axios';
-import { 
-  Search, 
-  Filter, 
-  ChevronLeft, 
-  ChevronRight, 
-  Eye, 
+import {
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
   Users,
   XCircle,
   RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { allSession } from '@/services/session.api';
+import { studentTeacher } from '@/services/studentTeacher.api';
 
 export default function TeacherStudentsPage() {
   const { theme, user } = useThemeContext();
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<any[]>([]);
-  
+
   // Filtering & Pagination State (Locked to teacher branch)
   const branchName = 'Computer Science';
   const [search, setSearch] = useState('');
+  const [sessionData, setSessionData] = useState([]);
   const [session, setSession] = useState('All Sessions');
   const [semester, setSemester] = useState('All Semesters');
   const [page, setPage] = useState(1);
@@ -34,21 +37,57 @@ export default function TeacherStudentsPage() {
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const fetchSession = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await allSession();
+      // console.log(response);
+      if (response.success) {
+        setSessionData(response.data)
+      }
+    } catch (error) {
+      console.error('Error fetching session list:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
       const sParam = session === 'All Sessions' ? '' : session;
       const semParam = semester === 'All Semesters' ? '' : semester;
 
-      // Locked branch query parameters to Teacher's branch
-      const response = await axios.get(
-        `/api/students?search=${encodeURIComponent(search)}&branch=${encodeURIComponent(branchName)}&session=${encodeURIComponent(sParam)}&semester=${semParam}&page=${page}&limit=7`
-      );
+      // Dynamic payload
+      const payload: Record<string, any> = {
+        page,
+        limit: 10,
+      };
 
-      if (response.data.success) {
-        setStudents(response.data.students);
-        setTotalPages(response.data.pagination.totalPages);
-        setTotalStudents(response.data.pagination.totalStudents);
+      if (sParam) {
+        payload.session = sParam;
+      }
+
+      if (semParam) {
+        payload.semester = semParam;
+      }
+
+      if (search?.trim()) {
+        payload.search = search.trim();
+      }
+
+      console.log(payload);
+
+      const response = await studentTeacher(payload)
+
+      // console.log(response);
+
+
+      if (response.success) {
+        setStudents(response.data);
+        setTotalPages(response.pagination.total_pages);
+        setTotalStudents(response.pagination.total_students);
       }
     } catch (error) {
       console.error('Error HOD CS student loading:', error);
@@ -56,6 +95,10 @@ export default function TeacherStudentsPage() {
       setLoading(false);
     }
   }, [search, session, semester, page]);
+
+  useEffect(() => {
+    fetchSession();
+  }, [fetchSession]);
 
   useEffect(() => {
     fetchStudents();
@@ -92,7 +135,7 @@ export default function TeacherStudentsPage() {
 
   return (
     <div className="space-y-6">
-      
+
       {/* Search & Filters */}
       <div className="glass-card p-5 rounded-2xl border space-y-4 shadow-md">
         <div className="flex items-center justify-between border-b border-slate-200/10 pb-3">
@@ -105,7 +148,7 @@ export default function TeacherStudentsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          
+
           {/* Universal Search */}
           <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200/10 bg-slate-500/5 md:col-span-2 neon-border-focus`}>
             <Search className="h-4 w-4 text-slate-400 flex-shrink-0" />
@@ -127,10 +170,16 @@ export default function TeacherStudentsPage() {
               className="bg-transparent border-none outline-none text-xs w-full focus:ring-0 font-semibold cursor-pointer text-slate-700 dark:text-slate-300"
             >
               <option value="All Sessions">All Batches</option>
-              <option value="2022-26">2022-26</option>
-              <option value="2023-27">2023-27</option>
-              <option value="2024-28">2024-28</option>
-              <option value="2025-29">2025-29</option>
+              {
+                sessionData?.map((item, index) => (
+                  <option
+                    key={index}
+                    value={item}
+                  >
+                    {item}
+                  </option>
+                ))
+              }
             </select>
           </div>
 
@@ -232,8 +281,8 @@ export default function TeacherStudentsPage() {
                       <td className="py-4.5 px-6 font-semibold text-slate-400">{student.session}</td>
                       <td className="py-4.5 px-6 text-center font-bold">{student.semester}</td>
                       <td className="py-4.5 px-6 text-center">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider inline-block ${getStatusBadge(student.performanceStatus)}`}>
-                          {student.performanceStatus}
+                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider inline-block ${getStatusBadge(student.ai_rating)}`}>
+                          {student.ai_rating}
                         </span>
                       </td>
                       <td className="py-4.5 px-6 text-center">

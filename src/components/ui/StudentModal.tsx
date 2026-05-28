@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { useThemeContext } from './ThemeProvider';
+import Image from 'next/image';
 
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -379,16 +380,17 @@ export default function StudentModal({
               pb-6
             ">
 
-              <img
+              <Image
                 src={details.avatar}
                 alt={details.name}
+                width={96}
+                height={96}
                 className="
-                  h-24 w-24 rounded-full
-                  object-cover border-4
-                  border-indigo-500 shadow-lg
-                "
+    h-24 w-24 rounded-full
+    object-cover border-4
+    border-indigo-500 shadow-lg
+  "
               />
-
               <div className="
                 flex-1 text-center
                 md:text-left space-y-2
@@ -413,8 +415,8 @@ export default function StudentModal({
                     uppercase bg-gradient-to-r
                     self-center
                     ${getStatusColor(
-                      prediction.final_result
-                    )}
+                    prediction.final_result
+                  )}
                   `}>
                     AI Rating:
                     {' '}
@@ -428,8 +430,8 @@ export default function StudentModal({
                     border uppercase
                     self-center
                     ${getRiskColor(
-                      prediction.risk_level
-                    )}
+                    prediction.risk_level
+                  )}
                   `}>
                     Risk:
                     {' '}
@@ -577,8 +579,8 @@ export default function StudentModal({
                         performance.attendance_percentage >= 85
                           ? '#10b981'
                           : performance.attendance_percentage >= 75
-                          ? '#f59e0b'
-                          : '#ef4444'
+                            ? '#f59e0b'
+                            : '#ef4444'
                       }
 
                       strokeWidth="8"
@@ -590,12 +592,11 @@ export default function StudentModal({
                       `}
 
                       strokeDashoffset={`
-                        ${
-                          2 * Math.PI * 40 *
-                          (
-                            1 -
-                            performance.attendance_percentage / 100
-                          )
+                        ${2 * Math.PI * 40 *
+                        (
+                          1 -
+                          performance.attendance_percentage / 100
+                        )
                         }
                       `}
 
@@ -634,14 +635,13 @@ export default function StudentModal({
                 <span className={`
                   text-xs font-semibold
                   px-3 py-1 rounded-full
-                  ${
-                    performance.attendance_percentage >= 85
-                      ? `
+                  ${performance.attendance_percentage >= 85
+                    ? `
                         bg-emerald-500/10
                         text-emerald-500
                         border border-emerald-500/20
                       `
-                      : performance.attendance_percentage >= 75
+                    : performance.attendance_percentage >= 75
                       ? `
                         bg-amber-500/10
                         text-amber-500
@@ -874,10 +874,9 @@ export default function StudentModal({
 
                     <p className={`
                       text-lg font-bold
-                      ${
-                        performance.backlog_count > 0
-                          ? 'text-rose-500'
-                          : 'text-emerald-500'
+                      ${performance.backlog_count > 0
+                        ? 'text-rose-500'
+                        : 'text-emerald-500'
                       }
                     `}>
 
@@ -994,14 +993,13 @@ export default function StudentModal({
                               text-xs flex gap-2
                               border
 
-                              ${
-                                isHigh
-                                  ? `
+                              ${isHigh
+                                ? `
                                     bg-rose-500/5
                                     border-rose-500/10
                                     text-rose-400
                                   `
-                                  : isMedium
+                                : isMedium
                                   ? `
                                     bg-amber-500/5
                                     border-amber-500/10

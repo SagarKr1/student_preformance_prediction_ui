@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { allSession } from '@/services/session.api';
 import { studentTeacher } from '@/services/studentTeacher.api';
+import { studentPerformance } from '@/services/studentPerformance.api';
 
 export default function TeacherStudentsPage() {
   const { theme, user } = useThemeContext();
@@ -109,9 +110,27 @@ export default function TeacherStudentsPage() {
     setPage(1);
   }, [search, session, semester]);
 
-  const handleOpenModal = (student: any) => {
-    setSelectedStudent(student);
-    setIsModalOpen(true);
+  const handleOpenModal = async (student: any) => {
+    try {
+      const payload = {
+        "student_id": student.rollNo
+      }
+
+      const response = await studentPerformance(payload)
+
+      console.log(response.data);
+
+      if (response.success) {
+        setSelectedStudent(response.data);
+        setIsModalOpen(true);
+      } else {
+        alert("Plzz try again");
+      }
+    } catch (e) {
+      console.log(e);
+      alert("SomeThing Went Wrong");
+      setIsModalOpen(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {

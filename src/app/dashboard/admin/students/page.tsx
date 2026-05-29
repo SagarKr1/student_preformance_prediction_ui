@@ -19,6 +19,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { studentPerformance } from '@/services/studentPerformanceAdmin.api';
 
 export default function AdminStudentsPage() {
   const { theme } = useThemeContext();
@@ -134,10 +135,28 @@ export default function AdminStudentsPage() {
     setPage(1);
   }, [search, branch, session, semester]);
 
-  const handleOpenModal = (student: any) => {
-    setSelectedStudent(student);
-    setIsModalOpen(true);
-  };
+  const handleOpenModal = async (student: any) => {
+      try {
+        const payload = {
+          "student_id": student.rollNo
+        }
+  
+        const response = await studentPerformance(payload);
+  
+        console.log(response.data);
+  
+        if (response.success) {
+          setSelectedStudent(response.data);
+          setIsModalOpen(true);
+        } else {
+          alert("Plzz try again");
+        }
+      } catch (e) {
+        console.log(e);
+        alert("SomeThing Went Wrong");
+        setIsModalOpen(false);
+      }
+    };
 
   const getStatusBadge = (status: string) => {
     switch (status) {

@@ -17,7 +17,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { allSession } from '@/services/session.api';
 import { studentTeacher } from '@/services/studentTeacher.api';
-import { studentPerformance } from '@/services/studentPerformance.api';
+import { studentPerformance } from '@/services/studentPerformanceTeacher.api';
 
 export default function TeacherStudentsPage() {
   const { theme, user } = useThemeContext();
